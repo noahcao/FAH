@@ -1,0 +1,196 @@
+FAH model weights: licence
+
+This licence covers all FAH model weights, including shared/detector.pt, fitted data files in the code tree,
+and exports derived from them (TensorRT engines, ONNX files and Core ML packages). Code is covered separately by
+LICENSE and NOTICE.
+
+Part 3 applies to all FAH Weights. Parts 1 and 2 apply to components derived from SAM and DINOv3 respectively;
+Part 4 records the detector's distribution and training terms. Upstream terms remain applicable and this licence grants no rights
+beyond them.
+
+
+PART 1. SAM LICENSE (PASS-THROUGH)
+
+The pose models derive from SAM 3D Body (Meta Platforms, Inc.): SAM 3D Body was their teacher, and FAH-H also starts
+from its image encoder. The fitters, video refiner, contact models and fitted data were trained on these models or
+their outputs. These SAM-derived components are distributed under the SAM License, reproduced below. Research
+publications using them must acknowledge SAM 3D Body (the SAM Materials). The detector uses FAH-generated labels;
+Part 4 records its distribution and training terms.
+
+----------------------------------------------------------------------------------------------------------------------
+SAM License
+Last Updated: November 19, 2025
+
+“Agreement” means the terms and conditions for use, reproduction, distribution and modification of the SAM Materials set forth herein.
+
+“SAM Materials” means, collectively, Documentation and the models, software and algorithms, including machine-learning model code, trained model weights, inference-enabling code, training-enabling code, fine-tuning enabling code, and other elements of the foregoing distributed by Meta and made available under this Agreement.
+
+“Documentation” means the specifications, manuals and documentation accompanying 
+SAM Materials distributed by Meta.
+
+“Licensee” or “you” means you, or your employer or any other person or entity (if you are entering into this Agreement on such person or entity’s behalf), of the age required under applicable laws, rules or regulations to provide legal consent and that has legal authority to bind your employer or such other person or entity if you are entering in this Agreement on their behalf.
+
+“Meta” or “we” means Meta Platforms Ireland Limited (if you are located in or, if you are an entity, your principal place of business is in the EEA or Switzerland) or Meta Platforms, Inc. (if you are located outside of the EEA or Switzerland).
+
+“Sanctions” means any economic or trade sanctions or restrictions administered or enforced by the United States (including the Office of Foreign Assets Control of the U.S. Department of the Treasury (“OFAC”), the U.S. Department of State and the U.S. Department of Commerce), the United Nations, the European Union, or the United Kingdom.
+
+“Trade Controls” means any of the following: Sanctions and applicable export and import controls.
+
+By using or distributing any portion or element of the SAM Materials, you agree to be bound by this Agreement.
+
+1. License Rights and Redistribution.
+
+a. Grant of Rights. You are granted a non-exclusive, worldwide, non-transferable and royalty-free limited license under Meta’s intellectual property or other rights owned by Meta embodied in the SAM Materials to use, reproduce, distribute, copy, create derivative works of, and make modifications to the SAM Materials.  
+
+i. Grant of Patent License. Subject to the terms and conditions of this License, you are granted a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by Meta that are necessarily infringed alone or by combination of their contribution(s) with the SAM 3 Materials. If you institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the SAM 3 Materials incorporated within the work constitutes direct or contributory patent infringement, then any patent licenses granted to you under this License for that work shall terminate as of the date such litigation is filed.
+ 
+b. Redistribution and Use.  
+
+i. Distribution of SAM Materials, and any derivative works thereof, are subject to the terms of this Agreement. If you distribute or make the SAM Materials, or any derivative works thereof, available to a third party, you may only do so under the terms of this Agreement and you shall provide a copy of this Agreement with any such SAM Materials.
+
+ii.  If you submit for publication the results of research you perform on, using, or otherwise in connection with SAM Materials, you must acknowledge the use of SAM Materials in your publication.
+
+iii. Your use of the SAM Materials must comply with applicable laws and regulations, including Trade Control Laws and applicable privacy and data protection laws.
+iv. Your use of the SAM Materials will not involve or encourage others to reverse engineer, decompile or discover the underlying components of the SAM Materials.
+v. You are not the target of Trade Controls and your use of SAM Materials must comply with Trade Controls. You agree not to use, or permit others to use, SAM Materials for any activities subject to the International Traffic in Arms Regulations (ITAR) or end uses prohibited by Trade Controls, including those related to military or warfare purposes, nuclear industries or applications, espionage, or the development or use of guns or illegal weapons.
+2. User Support. Your use of the SAM Materials is done at your own discretion; Meta does not process any information nor provide any service in relation to such use.  Meta is under no obligation to provide any support services for the SAM Materials. Any support provided is “as is”, “with all faults”, and without warranty of any kind.
+
+3. Disclaimer of Warranty. UNLESS REQUIRED BY APPLICABLE LAW, THE SAM MATERIALS AND ANY OUTPUT AND RESULTS THEREFROM ARE PROVIDED ON AN “AS IS” BASIS, WITHOUT WARRANTIES OF ANY KIND, AND META DISCLAIMS ALL WARRANTIES OF ANY KIND, BOTH EXPRESS AND IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. YOU ARE SOLELY RESPONSIBLE FOR DETERMINING THE APPROPRIATENESS OF USING OR REDISTRIBUTING THE SAM MATERIALS AND ASSUME ANY RISKS ASSOCIATED WITH YOUR USE OF THE SAM MATERIALS AND ANY OUTPUT AND RESULTS.
+ 
+4. Limitation of Liability. IN NO EVENT WILL META OR ITS AFFILIATES BE LIABLE UNDER ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, TORT, NEGLIGENCE, PRODUCTS LIABILITY, OR OTHERWISE, ARISING OUT OF THIS AGREEMENT, FOR ANY LOST PROFITS OR ANY DIRECT OR INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL, EXEMPLARY OR PUNITIVE DAMAGES, EVEN IF META OR ITS AFFILIATES HAVE BEEN ADVISED OF THE POSSIBILITY OF ANY OF THE FOREGOING.
+ 
+5. Intellectual Property.
+
+a. Subject to Meta’s ownership of SAM Materials and derivatives made by or for Meta, with respect to any derivative works and modifications of the SAM Materials that are made by you, as between you and Meta, you are and will be the owner of such derivative works and modifications.
+ 
+b. If you institute litigation or other proceedings against Meta or any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the SAM Materials, outputs or results, or any portion of any of the foregoing, constitutes infringement of intellectual property or other rights owned or licensable by you, then any licenses granted to you under this Agreement shall terminate as of the date such litigation or claim is filed or instituted. You will indemnify and hold harmless Meta from and against any claim by any third party arising out of or related to your use or distribution of the SAM Materials.
+ 
+6. Term and Termination. The term of this Agreement will commence upon your acceptance of this Agreement or access to the SAM Materials and will continue in full force and effect until terminated in accordance with the terms and conditions herein. Meta may terminate this Agreement if you are in breach of any term or condition of this Agreement. Upon termination of this Agreement, you shall delete and cease use of the SAM Materials. Sections 3, 4 and 7 shall survive the termination of this Agreement. 
+ 
+7. Governing Law and Jurisdiction. This Agreement will be governed and construed under the laws of the State of California without regard to choice of law principles, and the UN Convention on Contracts for the International Sale of Goods does not apply to this Agreement. The courts of California shall have exclusive jurisdiction of any dispute arising out of this Agreement. 
+
+8. Modifications and Amendments. Meta may modify this Agreement from time to time; provided that they are similar in spirit to the current version of the Agreement, but may differ in detail to address new problems or concerns. All such changes will be effective immediately. Your continued use of the SAM Materials after any modification to this Agreement constitutes your agreement to such modification. Except as provided in this Agreement, no modification or addition to any provision of this Agreement will be binding unless it is in writing and signed by an authorized representative of both you and Meta.
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+PART 2. DINOV3 LICENSE (PASS-THROUGH)
+
+The pose models (FAH-S, FAH-B and FAH-L: encoders initialised from DINOv3; FAH-H: SAM 3D Body's DINOv3 encoder), the
+contact heads (copies of those encoders' last blocks) and the camera-motion head (a DINOv3 ViT-S encoder) are also
+derived from DINOv3 (Meta Platforms, Inc.) and are distributed under the DINOv3 License, reproduced below.
+
+Built with DINOv3.
+
+----------------------------------------------------------------------------------------------------------------------
+# DINOv3 License
+
+*Last Updated: August 19, 2025*
+
+**“Agreement”** means the terms and conditions for use, reproduction, distribution and modification of the DINO Materials set forth herein.
+
+**“DINO Materials”** means, collectively, Documentation and the models, software and algorithms, including machine-learning model code, trained model weights, inference-enabling code, training-enabling code, fine-tuning enabling code, and other elements of the foregoing distributed by Meta and made available under this Agreement.
+
+**“Documentation”** means the specifications, manuals and documentation accompanying
+DINO Materials distributed by Meta.
+
+**“Licensee”** or **“you”** means you, or your employer or any other person or entity (if you are entering into this Agreement on such person or entity’s behalf), of the age required under applicable laws, rules or regulations to provide legal consent and that has legal authority to bind your employer or such other person or entity if you are entering in this Agreement on their behalf.
+
+**“Meta”** or **“we”** means Meta Platforms Ireland Limited (if you are located in or, if you are an entity, your principal place of business is in the EEA or Switzerland) or Meta Platforms, Inc. (if you are located outside of the EEA or Switzerland).
+
+**“Sanctions”** means any economic or trade sanctions or restrictions administered or enforced by the United States (including the Office of Foreign Assets Control of the U.S. Department of the Treasury (“OFAC”), the U.S. Department of State and the U.S. Department of Commerce), the United Nations, the European Union, or the United Kingdom.
+
+**“Trade Controls”** means any of the following: Sanctions and applicable export and import controls.
+
+By clicking “I Accept” below or by using or distributing any portion or element of the DINO Materials, you agree to be bound by this Agreement.
+
+## 1. License Rights and Redistribution.
+
+a. <ins>Grant of Rights</ins>. You are granted a non-exclusive, worldwide, non-transferable and royalty-free limited license under Meta’s intellectual property or other rights owned by Meta embodied in the DINO Materials to use, reproduce, distribute, copy, create derivative works of, and make modifications to the DINO Materials.
+
+b. <ins>Redistribution and Use</ins>.
+
+i. Distribution of DINO Materials, and any derivative works thereof, are subject to the terms of this Agreement. If you distribute or make the DINO Materials, or any derivative works thereof, available to a third party, you may only do so under the terms of this Agreement and you shall provide a copy of this Agreement with any such DINO Materials.
+
+ii.  If you submit for publication the results of research you perform on, using, or otherwise in connection with DINO Materials, you must acknowledge the use of DINO Materials in your publication.
+
+iii. Your use of the DINO Materials must comply with applicable laws and regulations, including Trade Control Laws and applicable privacy and data protection laws.
+
+iv. Your use of the DINO Materials will not involve or encourage others to reverse engineer, decompile or discover the underlying components of the DINO Materials.
+
+v. You are not the target of Trade Controls and your use of DINO Materials must comply with Trade Controls. You agree not to use, or permit others to use, DINO Materials for any activities subject to the International Traffic in Arms Regulations (ITAR) or end uses prohibited by Trade Controls, including those related to military or warfare purposes, nuclear industries or applications, espionage, or the development or use of guns or illegal weapons.
+
+## 2. User Support.
+
+Your use of the DINO Materials is done at your own discretion; Meta does not process any information nor provide any service in relation to such use.  Meta is under no obligation to provide any support services for the DINO Materials. Any support provided is “as is”, “with all faults”, and without warranty of any kind.
+
+## 3. Disclaimer of Warranty.
+
+UNLESS REQUIRED BY APPLICABLE LAW, THE DINO MATERIALS AND ANY OUTPUT AND RESULTS THEREFROM ARE PROVIDED ON AN “AS IS” BASIS, WITHOUT WARRANTIES OF ANY KIND, AND META DISCLAIMS ALL WARRANTIES OF ANY KIND, BOTH EXPRESS AND IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. YOU ARE SOLELY RESPONSIBLE FOR DETERMINING THE APPROPRIATENESS OF USING OR REDISTRIBUTING THE DINO MATERIALS AND ASSUME ANY RISKS ASSOCIATED WITH YOUR USE OF THE DINO MATERIALS AND ANY OUTPUT AND RESULTS.
+
+## 4. Limitation of Liability.
+
+IN NO EVENT WILL META OR ITS AFFILIATES BE LIABLE UNDER ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, TORT, NEGLIGENCE, PRODUCTS LIABILITY, OR OTHERWISE, ARISING OUT OF THIS AGREEMENT, FOR ANY LOST PROFITS OR ANY DIRECT OR INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL, EXEMPLARY OR PUNITIVE DAMAGES, EVEN IF META OR ITS AFFILIATES HAVE BEEN ADVISED OF THE POSSIBILITY OF ANY OF THE FOREGOING.
+
+## 5. Intellectual Property.
+
+a. Subject to Meta’s ownership of DINO Materials and derivatives made by or for Meta, with respect to any derivative works and modifications of the DINO Materials that are made by you, as between you and Meta, you are and will be the owner of such derivative works and modifications.
+
+b. If you institute litigation or other proceedings against Meta or any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the DINO Materials, outputs or results, or any portion of any of the foregoing, constitutes infringement of intellectual property or other rights owned or licensable by you, then any licenses granted to you under this Agreement shall terminate as of the date such litigation or claim is filed or instituted. You will indemnify and hold harmless Meta from and against any claim by any third party arising out of or related to your use or distribution of the DINO Materials.
+
+## 6. Term and Termination.
+
+The term of this Agreement will commence upon your acceptance of this Agreement or access to the DINO Materials and will continue in full force and effect until terminated in accordance with the terms and conditions herein. Meta may terminate this Agreement if you are in breach of any term or condition of this Agreement. Upon termination of this Agreement, you shall delete and cease use of the DINO Materials. Sections 3, 4 and 7 shall survive the termination of this Agreement.
+
+## 7. Governing Law and Jurisdiction.
+
+This Agreement will be governed and construed under the laws of the State of California without regard to choice of law principles, and the UN Convention on Contracts for the International Sale of Goods does not apply to this Agreement. The courts of California shall have exclusive jurisdiction of any dispute arising out of this Agreement.
+
+## 8. Modifications and Amendments.
+
+Meta may modify this Agreement from time to time; provided that they are similar in spirit to the current version of the Agreement, but may differ in detail to address new problems or concerns. All such changes will be effective immediately. Your continued use of the DINO Materials after any modification to this Agreement constitutes your agreement to such modification. Except as provided in this Agreement, no modification or addition to any provision of this Agreement will be binding unless it is in writing and signed by an authorized representative of both you and Meta.
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+PART 3. ADDITIONAL RESTRICTION: RESEARCH AND NON-COMMERCIAL USE ONLY
+
+In addition to the applicable upstream terms, the FAH Weights may be used, reproduced, modified and distributed for research and other
+non-commercial purposes only. Any distribution of the FAH Weights or of works derived from them must carry this
+licence, including this restriction.
+
+Why: the FAH Weights were trained with models and data whose licences do not allow commercial use of networks trained
+on them.
+- MANO (Max Planck Institute for Intelligent Systems licence): "This license also prohibits the use of the Software to
+  train methods/algorithms/neural networks/etc. for commercial, pornographic, military, surveillance, or defamatory use
+  of any kind." MANO meshes and fits supervise the pose models, the contact heads and the mesh fitters.
+- ARCTIC (Max Planck Institute for Intelligent Systems licence; the contact heads, the video contact models and the
+  camera-motion head): the same prohibition.
+- Training data licensed for non-commercial or research use only: the HOT3D hand annotations (CC BY-NC-SA 4.0), DexYCB
+  (CC BY-NC 4.0), InterHand2.6M (CC BY-NC 4.0), HOI4D (CC BY-NC 4.0), COCO-WholeBody, EPIC-KITCHENS-100 and VISOR (CC
+  BY-NC 4.0), FreiHAND and HanCo, HO-3D, the CMU Panoptic hand labels, EgoDex (CC BY-NC-ND), MOW with HACO's contact
+  labels (CC BY-NC 4.0).
+- WiLoR (CC BY-NC-ND 4.0): its outputs are distillation targets of the pose models.
+- The camera-motion head contains torchvision's pretrained RAFT-small weights, trained on FlyingChairs and FlyingThings3D
+  (research use only).
+
+The FAH Weights do not contain or redistribute any of these datasets or the MANO model. MANO is downloaded by the user
+under its own licence.
+
+
+PART 4. DETECTOR PROVENANCE AND UPSTREAM TERMS
+
+This part covers the hand detector shared/detector.pt
+and exports derived from it. Non-commercial research use only; Part 3 and the applicable upstream terms apply.
+
+The detector checkpoint is provided by FAH.
+
+- Ultralytics: the YOLOv8 lineage and training software carry AGPL-3.0 terms to the extent applicable
+  (https://github.com/ultralytics/ultralytics). Inference uses FAH's own implementation in fah/yolo.py.
+- Training sources: COCO-WholeBody, VISOR, HOT3D, HInt, CMU Panoptic, HaGRID v2, OakInk2 and reviewed hard hands;
+  SAM 2.1 / SAM 3 masks and FAH labels. Dataset terms remain applicable; no dataset is redistributed.
+
+When sharing detector weights or publishing results, credit FAH and Ultralytics YOLOv8, and include this licence. Stricter upstream terms prevail; this file does not grant permission to override them.
+
+The detector weights are provided AS IS, without warranties of any kind. The authors are not liable for claims,
+damages or other liability arising from their use.

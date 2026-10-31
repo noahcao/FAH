@@ -1,0 +1,20 @@
+FAH: Fast and Accurate Hand Estimation
+Copyright 2026 the FAH authors
+
+This product is licensed under the Apache License, Version 2.0 (LICENSE), with these exceptions:
+
+- Files derived from SAM 3D Body (Copyright (c) Meta Platforms, Inc. and affiliates), marked
+  "SPDX-License-Identifier: LicenseRef-SAM-License" and listed in THIRD_PARTY_NOTICES.md, are licensed under the SAM
+  License (third_party_licenses/SAM-License.txt).
+- The vendored DINOv3 code in fah/models/backbones/dinov3_vit/ (Copyright (c) Meta Platforms, Inc. and affiliates),
+  marked "SPDX-License-Identifier: LicenseRef-DINOv3-License", is licensed under the DINOv3 License
+  (third_party_licenses/DINOv3-License.md).
+- All model weights (including hand detectors), exports and fitted data files use WEIGHTS_LICENSE.
+- The evaluation labels in datasets/ are licensed separately: see datasets/LICENSE.md.
+
+This product includes code adapted from TRAM (MIT License, Copyright (c) 2024 Yufu Wang), DROID-SLAM (BSD 3-Clause
+License, Copyright (c) 2021 Princeton Vision & Learning Lab), DPVO (MIT License, Copyright (c) 2022 Princeton Vision &
+Learning Lab), torchvision (BSD 3-Clause License, Copyright (c) Soumith Chintala 2016), RoMa (BSD 3-Clause License,
+Copyright (c) 2020 NAVER Corp.), Metric3D (BSD 2-Clause License, Copyright (c) 2024 Wei Yin and Mu Hu), pymomentum (MIT
+License, Copyright (c) Meta Platforms, Inc. and affiliates) and MHR (Apache License 2.0, Meta Platforms, Inc.). Their
+notices are in THIRD_PARTY_NOTICES.md and their licence texts in third_party_licenses/.

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAH: Fast and Accurate Hand Estimation in Pixels, Interaction and World Space</title>
+<meta name="description" content="FAH: a family of fast hand estimators for images, video and world space. Joints, dense MANO-topology surface points, a fitted MANO mesh and part segmentation from one network.">
+<meta property="og:title" content="FAH: Fast and Accurate Hand Estimation in Pixels, Interaction and World Space">
+<meta property="og:image" content="assets/teaser_main.jpg">
+<style>
+  :root {
+    --fg: #1d1d1f;
+    --muted: #5f6368;
+    --bg: #ffffff;
+    --panel: #f6f7f9;
+    --line: #e3e5e8;
+    --accent: #1f5fae;
+    --accent-bg: #e8f0fb;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 0 20px 64px; }
+  header { text-align: center; padding: 56px 0 24px; }
+  h1 { font-size: 2.3rem; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h1 .short { color: var(--accent); }
+  .subtitle { font-size: 1.25rem; color: var(--muted); margin: 0 0 18px; }
+  .authors { font-size: 1.05rem; margin: 0 0 4px; }
+  .affil { color: var(--muted); font-size: 0.95rem; margin: 0 0 22px; }
+  .links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .links a {
+    display: inline-block; padding: 8px 20px; border-radius: 999px;
+    background: var(--fg); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.95rem;
+  }
+  .links a:hover { opacity: 0.88; }
+  section { margin-top: 48px; }
+  h2 { font-size: 1.5rem; margin: 0 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  h3 { font-size: 1.1rem; margin: 28px 0 8px; }
+  p { margin: 0 0 12px; }
+  figure { margin: 0; }
+  figure img, figure video { width: 100%; height: auto; display: block; border-radius: 6px; }
+  figure.diagram img { border-radius: 0; }
+  figcaption { color: var(--muted); font-size: 0.92rem; margin-top: 8px; line-height: 1.5; }
+  .credits { font-size: 0.8rem; }
+  .credits-list { font-size: 0.85rem; color: var(--muted); padding-left: 1.2em; }
+  .abstract { text-align: justify; hyphens: auto; }
+  .contrib { margin: 16px 0 0; padding-left: 1.2em; }
+  .contrib li { margin: 6px 0; }
+  .highlights { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 20px 0 0; }
+  .highlights div { background: var(--panel); border-radius: 8px; padding: 14px 16px; font-size: 0.95rem; }
+  .highlights b { display: block; font-size: 1.35rem; color: var(--accent); }
+  .table-wrap { overflow-x: auto; margin: 6px 0 4px; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+  th, td { padding: 6px 9px; text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  td.left, th.left { text-align: left; }
+  thead th { border-bottom: 1px solid var(--fg); font-weight: 600; }
+  thead tr.group th { border-bottom: 1px solid var(--line); text-align: center; color: var(--muted); font-weight: 600; }
+  tbody tr { border-bottom: 1px solid var(--line); }
+  tbody tr.sep td { background: var(--panel); color: var(--muted); font-style: italic; text-align: left; padding: 4px 9px; }
+  tbody tr.ours td { background: var(--accent-bg); }
+  table b { font-weight: 700; }
+  .videos { display: grid; grid-template-columns: 1fr; gap: 24px; }
+  #contact .videos, #wild .videos, #headmounted .videos, #closeups .videos, #real2sim .videos, #test-videos .videos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 700px) { #contact .videos, #wild .videos, #headmounted .videos, #closeups .videos, #real2sim .videos, #test-videos .videos { grid-template-columns: 1fr; } }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) { .pair { grid-template-columns: 1fr; } }
+  .trio { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 800px) { .trio { grid-template-columns: 1fr; } }
+  .placeholder {
+    aspect-ratio: 16 / 9; width: 100%; border: 2px dashed var(--line); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; color: var(--muted); background: var(--panel);
+  }
+  pre {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px; overflow-x: auto; font-size: 0.85rem; line-height: 1.45; margin: 0;
+  }
+  .bib { position: relative; }
+  .bib button {
+    position: absolute; top: 8px; right: 8px; border: 1px solid var(--line); background: #fff;
+    border-radius: 6px; padding: 3px 10px; font-size: 0.8rem; cursor: pointer; color: var(--fg);
+  }
+  footer { margin-top: 56px; color: var(--muted); font-size: 0.85rem; text-align: center; }
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    h1 { font-size: 1.7rem; }
+    .subtitle { font-size: 1.05rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1><span class="short">FAH</span>: Fast and Accurate Hand Estimation</h1>
+  <p class="subtitle">in Pixels, Interaction and World Space</p>
+  <p class="authors">Jinkun Cao</p>
+  <p class="affil"><a href="https://www.jinkuncao.com">www.jinkuncao.com</a></p>
+  <nav class="links">
+    <a href="https://arxiv.org/pdf/2611.07711">Paper</a>
+    <a href="https://github.com/noahcao/FAH">Code</a>
+    <a href="#bibtex">BibTeX</a>
+  </nav>
+</header>
+
+
+
+<section id="teaser" style="margin-top: 24px;">
+  <figure>
+    <img src="assets/teaser_main.jpg" alt="FAH-H outputs on ten scenes: 2D keypoints, dense surface points, fitted MANO mesh, part segmentation and per-vertex contact" width="3068" height="1231">
+    <figcaption><b>Five outputs of FAH-H on ten scenes.</b> Left to right: 2D keypoints, dense surface points, fitted MANO mesh, hand parts and contact (grey to violet). Outlines: right hand blue, left hand orange. Image sources and licences are listed in <a href="#credits">Credits</a>.</figcaption>
+  </figure>
+</section>
+
+<section id="method">
+  <h2>Method</h2>
+  <figure class="diagram">
+    <img src="assets/method_fig2.jpg" alt="FAH on one frame of a held-out HOT3D benchmark clip: detector outputs, crop and ViT encoder, 2D and 3D hand points, MHR-Hand and MANO fits, parts in the mask, contact on the surface, the causal video track and world-space placement" width="2526" height="1013" loading="lazy">
+    <figcaption><b>FAH on one frame of a held-out HOT3D benchmark clip.</b> The detector returns each hand&rsquo;s box, handedness and instance mask (drawn on the frame) and its crop for the ViT encoder. On the crop, the heatmap head predicts 2D joints and dense surface points with root-relative 3D (inset), to which MHR-Hand and MANO are fitted (dashed; inset: side view, MANO outlined); the part head labels each pixel inside the detector mask with its hand part, and the contact head estimates per-vertex contact probabilities, shown on the fitted MANO hand (0&ndash;1, grey to violet; inset: palm side). Bottom: the causal video model refines the joints from past frames only (frames 4 apart, with thumb and index fingertip trails), and the camera model places the hands in world space (camera grey, wrists coloured). Blue: right hand; orange: left.<br><span class="credits">Adapted from a frame of a held-out HOT3D benchmark clip (CC BY-SA 4.0); this figure is CC BY-SA 4.0.</span></figcaption>
+  </figure>
+</section>
+
+<section id="test-videos">
+  <h2>In-the-wild test videos (all outputs)</h2>
+  <p class="note">Two of our own videos, full length and without cuts, made with the release&rsquo;s one-command script (<code>fah-video</code>, see the README): FAH-L with the shipped video preset and every output, hands with confidence &ge; 0.3. Tiles: input | 2D keypoints | 3D hand mesh (the fitted MANO mesh), then hand parts + instance masks | per-vertex contact (grey &le; 0.3 to violet &ge; 0.7) | the last tile (below), over the per-hand contact timeline (violet bar: the video contact model&rsquo;s flag; thin pink bar: the image head&rsquo;s).</p>
+  <div class="videos">
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/test_video_selfie_poster.jpg" width="1920" height="1152">
+        <source src="assets/videos/test_video_selfie.mp4" type="video/mp4">
+      </video>
+      <figcaption>Gestures, overlapping hands and object handling facing the camera. Final tile: palm-side contact.</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/test_video_ego_poster.jpg" width="1920" height="992">
+        <source src="assets/videos/test_video_ego.mp4" type="video/mp4">
+      </video>
+      <figcaption>Egocentric desk work with a camera, toy, mouse and keyboard. Final tile: hands and offline camera trajectory in world space.</figcaption>
+    </figure>
+  </div>
+  <h3 id="haco">Contact vs HACO on the test videos</h3>
+  <p class="note">Comparison with <a href="https://arxiv.org/abs/2505.11152">HACO</a> using its paper protocol (2&times; crop, threshold 0.56). HACO contact is shown on WiLoR&rsquo;s mesh; FAH-L uses its own fitted mesh. Grey to violet indicates increasing contact probability. Timelines show contact scores and flags; pink marks FAH-L&rsquo;s image head. HACO flags contact throughout these videos; FAH-L flags 69&ndash;95% of object holds and 8&ndash;10% of gestures, with more switching. FAH-L can also flag hand-hand or hand-face contact.</p>
+  <div class="videos">
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/haco_vs_fahL_selfie_poster.jpg" width="1280" height="826">
+        <source src="assets/videos/haco_vs_fahL_selfie.mp4" type="video/mp4">
+      </video>
+      <figcaption>Camera and charger holds, gestures and self-contact.</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/haco_vs_fahL_ego_poster.jpg" width="1280" height="746">
+        <source src="assets/videos/haco_vs_fahL_ego.mp4" type="video/mp4">
+      </video>
+      <figcaption>Desk work with object holds and an open-hand reach.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="video">
+  <h2>Outputs</h2>
+  <div class="videos">
+    <figure>
+      <video controls muted playsinline loop preload="metadata" poster="assets/videos/hot3d_full_modality_poster.jpg" width="1440" height="960">
+        <source src="assets/videos/hot3d_full_modality.mp4" type="video/mp4">
+      </video>
+      <figcaption>FAH-L outputs on a held-out HOT3D clip: joints, surface points, mesh, hand parts and masks.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Contact</h2>
+  <figure>
+    <img src="assets/contact_main.jpg" alt="Contact on six held-out HOT3D and DexYCB hands: input crop, ground truth, HACO and FAH-L on the ground-truth MANO mesh, with per-hand vertex F1" width="3668" height="954" loading="lazy">
+    <figcaption><b>Contact on held-out hands</b> (training-disjoint HOT3D benchmark clips and DexYCB s0 test of the <a href="#contact-table">contact table</a>, ground-truth boxes). Per hand: the input crop, the ground-truth contact (vertices within 10&nbsp;mm of or inside the object), HACO and FAH-L, all three on the same ground-truth MANO mesh, viewed from its contact side; grey to violet, each method mapped so that 0.5 is its validation threshold (FAH-L: the released, calibrated head, as in the <a href="#contact-table">contact table</a>); per-hand vertex F1 under each prediction. Hands: the first in a fixed random order of the hands with at least 30 contact vertices for each grasp type (HOT3D pinch, power, fingers; DexYCB pinch, power; no object twice) and, last, the first with FAH-L vertex F1 below 0.3. HACO is better on the fourth hand; the last shows a missed fingertip contact at the onset of a reach.<br><span class="credits">Top row: adapted from frames of the held-out HOT3D benchmark clips (CC BY-SA 4.0) and their hand annotations (the ground-truth meshes and contact; CC BY-NC-SA 4.0), so these tiles are CC BY-NC-SA 4.0. Bottom row: adapted from the DexYCB s0 test split (Chao et al., CVPR 2021; CC BY-NC 4.0); CC BY-NC 4.0.</span></figcaption>
+  </figure>
+  <p class="note" style="margin-top: 24px;">Selected examples from held-out HOT3D benchmark clips, chosen to illustrate (not random samples). Mesh colour = FAH-L per-vertex contact probability (grey at &le; 0.3 to violet at &ge; 0.7); panel header = hand-level contact flag (FAH-Video). Timeline: FAH-Video contact (violet), the image head alone (pink), ground truth (grey). On HOT3D, the video model switches the contact flag less often (clip 002606); on other datasets the effect differs, see the paper&rsquo;s contact family table. Limitation: contact can also fire on self-contact (hand-face, hand-hand).</p>
+  <div class="videos">
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/contact_1_hot3d_clip-002606_poster.jpg" width="1920" height="1260">
+        <source src="assets/videos/contact_1_hot3d_clip-002606.mp4" type="video/mp4">
+      </video>
+      <figcaption>HOT3D clip-002606. Contact-flag switches: video 14, image 28, ground truth 28.</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/contact_2_hot3d_clip-001910_from1s_poster.jpg" width="1920" height="1260">
+        <source src="assets/videos/contact_2_hot3d_clip-001910_from1s.mp4" type="video/mp4">
+      </video>
+      <figcaption>HOT3D clip-001910, from 1.0&nbsp;s.</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/contact_3_hot3d_clip-001881_poster.jpg" width="1920" height="1260">
+        <source src="assets/videos/contact_3_hot3d_clip-001881.mp4" type="video/mp4">
+      </video>
+      <figcaption>HOT3D clip-001881.</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/contact_4_hot3d_clip-002511_poster.jpg" width="1920" height="1260">
+        <source src="assets/videos/contact_4_hot3d_clip-002511.mp4" type="video/mp4">
+      </video>
+      <figcaption>HOT3D clip-002511.</figcaption>
+    </figure>
+</div>
+  <figure style="margin-top: 24px;">
+    <img src="assets/contact_strip.jpg" alt="FAH-L image contact on three held-out HOT3D frames and three in-the-wild photos, each over its palm-side view" width="2440" height="800" loading="lazy">
+    <figcaption>Selected examples: FAH-L image contact on held-out HOT3D frames and in-the-wild photos (credits below). Colour = per-vertex contact probability (grey to violet, linear from 0 to 1). Quantitative results are in the paper&rsquo;s contact family table. Limitation: contact can also fire on self-contact (hand-face, hand-hand).<br><span class="credits">Left to right: tiles 1&ndash;3 adapted from frames of the held-out HOT3D benchmark clips (CC BY-SA 4.0; these tiles are CC BY-SA 4.0); 4 &ldquo;<a href="https://www.flickr.com/photos/mellis/9062942544">Nadya and Jeff making cellphones</a>&rdquo; by David Mellis (<a href="https://creativecommons.org/licenses/by/2.0">CC BY 2.0</a>); 5 &ldquo;<a href="https://www.flickr.com/photos/edenpictures/8352212112">Snack Break</a>&rdquo; by Eden, Janine and Jim (<a href="https://creativecommons.org/licenses/by/2.0">CC BY 2.0</a>); 6 &ldquo;<a href="https://www.flickr.com/photos/brookage/274657051">vincent&rsquo;s last night in town</a>&rdquo; by brooke (<a href="https://creativecommons.org/licenses/by-sa/2.0">CC BY-SA 2.0</a>; this tile is CC BY-SA 2.0). Photos 4&ndash;6 via COCO train2017, cropped around the hand and overlaid with our mesh render.</span></figcaption>
+  </figure>
+</section>
+
+
+
+<section id="wild">
+  <h2>FAH-L vs WiLoR / HaWoR on contact juggling</h2>
+  <p class="note">Hands with confidence &ge; 0.3 shown for every method; fps on a desktop RTX 4070 Ti SUPER (FAH-L: the shipped video preset).</p>
+  <p class="credits">All contact juggling footage: <a href="https://www.youtube.com/@kumakumafilms">KUMA Films (@kumakumafilms)</a>. Cropped and overlaid with model predictions.</p>
+  <div class="videos">
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/contact_juggling_1_poster.jpg" width="1440" height="540">
+        <source src="assets/videos/contact_juggling_1_compare.mp4" type="video/mp4">
+      </video>
+      <figcaption>Contact juggling. Video: <a href="https://www.youtube.com/@kumakumafilms">KUMA Films</a>.</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/contact_juggling_2_poster.jpg" width="1440" height="540">
+        <source src="assets/videos/contact_juggling_2_compare.mp4" type="video/mp4">
+      </video>
+      <figcaption>Contact juggling. Video: <a href="https://www.youtube.com/@kumakumafilms">KUMA Films</a>.</figcaption>
+    </figure>
+</div>
+</section>
+
+<section id="headmounted">
+  <h2>Head-mounted (egocentric): FAH-L vs WiLoR / HaWoR</h2>
+  <p class="note">HoloLens&nbsp;2 head-camera video from HoloAssist. Panels: FAH-L (video) | WiLoR | HaWoR, 2D joints (top) and meshes (bottom); hands with confidence &ge; 0.3 shown for every method; fps on a desktop RTX 4070 Ti SUPER (FAH-L: the shipped video preset). On this footage all three methods find a hand in nearly the same frames (92&ndash;100%); they differ in the finger poses around the held objects.</p>
+  <div class="videos">
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/holoassist_atv_poster.jpg" width="1440" height="540">
+        <source src="assets/videos/holoassist_atv_compare.mp4" type="video/mp4">
+      </video>
+      <figcaption>Tool work on an ATV engine.</figcaption>
+    </figure>
+<figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/holoassist_dslr_poster.jpg" width="1440" height="540">
+        <source src="assets/videos/holoassist_dslr_compare.mp4" type="video/mp4">
+      </video>
+      <figcaption>DSLR battery and lens handling.</figcaption>
+    </figure>
+  </div>
+  <h3>Egocentric-10K: factory work, head-mounted fisheye, rectified to a pinhole camera</h3>
+  <p class="note">Every method gets the rectified camera; same panels and threshold as above.</p>
+  <div class="videos">
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/egocentric10k_smallparts_poster.jpg" width="1440" height="540">
+        <source src="assets/videos/egocentric10k_smallparts_compare.mp4" type="video/mp4">
+      </video>
+      <figcaption>Picking and fitting small electronic parts on a mat.</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/egocentric10k_garment_poster.jpg" width="1440" height="540">
+        <source src="assets/videos/egocentric10k_garment_compare.mp4" type="video/mp4">
+      </video>
+      <figcaption>Smoothing and folding a large piece of fabric.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="closeups">
+  <h2>In-the-wild close-ups: FAH-L vs WiLoR / HaWoR</h2>
+  <p class="note">Close-up hand work seen from above and in front (not head-mounted). Panels: FAH-L (video) | WiLoR | HaWoR, 2D joints (top) and meshes (bottom); hands with confidence &ge; 0.3 shown for every method; fps on a desktop RTX 4070 Ti SUPER (FAH-L: the shipped video preset).</p>
+  <div class="videos">
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/ego_commons_knitting_poster.jpg" width="1440" height="540">
+        <source src="assets/videos/ego_commons_knitting_compare.mp4" type="video/mp4">
+      </video>
+      <figcaption>Knitting: hand pose and mesh comparison.</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/ego_commons_crochet_poster.jpg" width="1440" height="540">
+        <source src="assets/videos/ego_commons_crochet_compare.mp4" type="video/mp4">
+      </video>
+      <figcaption>Crochet: hand pose and mesh comparison.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="real2sim">
+  <h2>Real to sim</h2>
+  <p>FAH-L&rsquo;s hands (video mode, released model) and the object from SAM&nbsp;3D Objects, replayed in MuJoCo (supplementary material). Panels: input video | FAH-L hand + reconstructed object | MuJoCo physics (free object, the hand as 16 convex parts). Real to sim on 54 held-out clips (30 DexYCB, 24 HOT3D egocentric), success rule fixed in advance, 3 replays per clip: 7 / 54 pass with the primary controller (joint-space finger closing), 5 / 54 with the Cartesian controller; no egocentric clip passes. Shown: 5 of the 6 clips that pass all 3 replays.</p>
+  <div class="videos">
+<figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/real2sim_marker_demo.jpg" width="1440" height="360">
+        <source src="assets/videos/real2sim_marker_demo.mp4" type="video/mp4">
+      </video>
+      <figcaption>Marker held in a precision grasp (DexYCB; sequence not in FAH&rsquo;s training data).</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/real2sim_coffee_can_left_demo.jpg" width="1440" height="360">
+        <source src="assets/videos/real2sim_coffee_can_left_demo.mp4" type="video/mp4">
+      </video>
+      <figcaption>Coffee can lifted with the left hand (DexYCB; sequence not in FAH&rsquo;s training data).</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/real2sim_drill_demo.jpg" width="1440" height="360">
+        <source src="assets/videos/real2sim_drill_demo.mp4" type="video/mp4">
+      </video>
+      <figcaption>Power drill lifted by its handle (DexYCB; a sequence in FAH&rsquo;s training data).</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/real2sim_banana_demo.jpg" width="1440" height="360">
+        <source src="assets/videos/real2sim_banana_demo.mp4" type="video/mp4">
+      </video>
+      <figcaption>Banana picked up and lifted (DexYCB; a sequence in FAH&rsquo;s training data).</figcaption>
+    </figure>
+    <figure>
+      <video controls muted playsinline loop preload="none" poster="assets/videos/real2sim_soup_can_demo.jpg" width="1440" height="360">
+        <source src="assets/videos/real2sim_soup_can_demo.mp4" type="video/mp4">
+      </video>
+      <figcaption>Soup can lifted with a top grasp (DexYCB; a sequence in FAH&rsquo;s training data).</figcaption>
+    </figure>
+  </div>
+  <p><small class="credits">Adapted from DexYCB (Chao et al., CVPR 2021; CC BY-NC 4.0); these videos are CC BY-NC 4.0. Object reconstruction: SAM 3D Objects (Meta). Simulation: MuJoCo.</small></p>
+</section>
+
+<section id="results">
+  <h2>Results</h2>
+
+  <h3>3D accuracy on HOT3D v1 and EgoStandard</h3>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr class="group"><th></th><th></th><th colspan="7">HOT3D v1</th><th colspan="6">EgoStandard (held out)</th></tr>
+      <tr><th>method</th><th>fps</th><th>PA</th><th>PA-p</th><th>PVE</th><th>root</th><th>MRRPE</th><th>accel</th><th>jitter</th><th>PA</th><th>PA-p</th><th>PVE</th><th>root</th><th>accel</th><th>jitter</th></tr>
+    </thead>
+    <tbody>
+      <tr class="sep"><td colspan="15">per frame</td></tr>
+      <tr><td>MediaPipe Hands</td><td>&mdash;</td><td>19.61</td><td>67.01</td><td>&mdash;</td><td>87.72</td><td>119.79</td><td>20.59</td><td>20.61</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td>HaMeR</td><td>4.6</td><td>9.46</td><td>14.48</td><td>9.24</td><td>41.62</td><td>49.26</td><td>6.75</td><td>6.84</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td>Hamba</td><td>5.0</td><td>9.28</td><td>14.31</td><td>9.02</td><td>40.66</td><td>47.83</td><td>7.22</td><td>7.31</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td>WiLoR</td><td>4.7</td><td>6.72</td><td>11.85</td><td>6.49</td><td>43.89</td><td>48.57</td><td>8.30</td><td>8.48</td><td>7.26</td><td>8.59</td><td>7.52</td><td>64.18</td><td>6.64</td><td>6.71</td></tr>
+      <tr><td>SAM 3D Body hand</td><td>10<sup>*</sup></td><td>8.30</td><td>&mdash;</td><td>8.49</td><td>40.00</td><td>52.36</td><td>5.62</td><td>5.81</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td>FAH-S</td><td><b>101</b></td><td>5.25</td><td>5.51</td><td>4.89</td><td>11.94</td><td>16.20</td><td>5.60</td><td>5.87</td><td>7.31</td><td>7.60</td><td>7.28</td><td>30.66</td><td>5.55</td><td>5.61</td></tr>
+      <tr><td>FAH-B</td><td>89</td><td>4.57</td><td>4.84</td><td>4.28</td><td>9.76</td><td>13.19</td><td>4.58</td><td>4.90</td><td>7.11</td><td>7.40</td><td><b>7.12</b></td><td>30.18</td><td>4.77</td><td>4.84</td></tr>
+      <tr class="ours"><td><b>FAH-L</b></td><td>65</td><td>4.31</td><td>4.58</td><td>4.02</td><td>8.89</td><td>12.13</td><td>3.83</td><td>4.19</td><td><b>7.10</b></td><td>7.39</td><td><b>7.12</b></td><td>30.21</td><td>3.99</td><td>4.06</td></tr>
+      <tr><td>FAH-H</td><td>27</td><td>4.12</td><td>4.39</td><td>3.85</td><td>9.12</td><td>11.65</td><td>3.95</td><td>4.31</td><td>7.14</td><td>7.44</td><td>7.15</td><td><b>28.53</b></td><td>3.95</td><td>4.01</td></tr>
+      <tr class="sep"><td colspan="15">video</td></tr>
+      <tr><td>HaWoR</td><td>11</td><td>5.89</td><td>14.78</td><td>5.57</td><td>29.51</td><td>27.67</td><td>1.94</td><td>2.03</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td>FAH-S video</td><td>88</td><td>5.08</td><td>5.28</td><td>4.80</td><td>11.59</td><td>15.70</td><td>2.24</td><td>2.45</td><td>7.35</td><td>7.50</td><td>7.30</td><td>30.75</td><td>2.14</td><td>2.14</td></tr>
+      <tr><td>FAH-B video</td><td>79</td><td>4.42</td><td>4.65</td><td>4.19</td><td>9.42</td><td>12.69</td><td>1.89</td><td>2.15</td><td>7.16</td><td><b>7.30</b></td><td>7.15</td><td>30.25</td><td>1.91</td><td>1.91</td></tr>
+      <tr class="ours"><td><b>FAH-L video</b></td><td>59</td><td>4.16</td><td>4.38</td><td>3.95</td><td>8.55</td><td>11.58</td><td><b>1.65</b></td><td><b>1.92</b></td><td>7.17</td><td>7.31</td><td>7.15</td><td>30.29</td><td>1.67</td><td>1.66</td></tr>
+      <tr><td>FAH-H video</td><td>26</td><td><b>3.98</b></td><td><b>4.19</b></td><td><b>3.77</b></td><td><b>8.34</b></td><td><b>10.72</b></td><td>1.66</td><td>1.94</td><td>7.20</td><td>7.35</td><td>7.18</td><td>28.84</td><td><b>1.65</b></td><td><b>1.63</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><small style="color: var(--muted);">mm; accel and jitter in mm/frame&sup2;; PA-p: coverage-aware PA-MPJPE (each missed hand counts as a canonical hand). fps on HOT3D frames on an NVIDIA RTX 4070 Ti SUPER (16&nbsp;GB) desktop GPU, slower of two rounds; FAH fps end to end (detection, pose, mesh fit, fingertips; optional parts excluded), all four models timed in one session. <sup>*</sup>Our CUDA-graph implementation (5.9&nbsp;fps eager). Crop-based baselines use WiLoR&rsquo;s detector. The four models share data, losses and schedule and differ only in encoder initialisation and input size. EgoStandard: held-out test, aggregate metrics only, scored once per released model and not used to choose among them.</small></p>
+
+  <h3>2D accuracy on bench2d v2 and the challenging-pose, low-light and shadow sets</h3>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr class="group"><th></th><th></th><th colspan="4">bench2d v2</th><th colspan="3">challenging poses</th><th colspan="3">low light</th><th colspan="3">shadows</th></tr>
+      <tr><th>method</th><th>fps</th><th>PCK</th><th>incl.</th><th>3D fit</th><th>overlap</th><th>recall</th><th>PCK</th><th>incl.</th><th>recall</th><th>PCK</th><th>incl.</th><th>recall</th><th>PCK</th><th>incl.</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>MediaPipe Hands</td><td>&mdash;</td><td>0.65</td><td>0.34</td><td>0.55</td><td>0.28</td><td>0.05</td><td>0.94</td><td>0.05</td><td>0.33</td><td>0.65</td><td>0.22</td><td>0.58</td><td>0.89</td><td>0.51</td></tr>
+      <tr><td>RTMPose-m</td><td>89</td><td>0.71</td><td>0.40</td><td>&mdash;</td><td>0.23</td><td>0.07</td><td>0.82</td><td>0.06</td><td>0.35</td><td>0.70</td><td>0.24</td><td>0.45</td><td>0.94</td><td>0.42</td></tr>
+      <tr><td>RTMW-l</td><td>32</td><td>0.68</td><td>0.65</td><td>&mdash;</td><td>0.56</td><td>0.13</td><td>0.84</td><td>0.11</td><td>0.85</td><td>0.65</td><td>0.56</td><td>0.98</td><td>0.89</td><td>0.87</td></tr>
+      <tr><td>HaMeR</td><td>4.6</td><td>0.71</td><td>0.66</td><td>0.65</td><td>0.55</td><td>0.84</td><td>0.93</td><td>0.78</td><td>0.82</td><td>0.70</td><td>0.57</td><td>0.95</td><td>0.97</td><td>0.92</td></tr>
+      <tr><td>Hamba</td><td>5.0</td><td>0.72</td><td>0.66</td><td>0.65</td><td>0.55</td><td>0.84</td><td>0.93</td><td>0.78</td><td>0.81</td><td>0.70</td><td>0.57</td><td>0.95</td><td>0.97</td><td>0.92</td></tr>
+      <tr><td>WiLoR</td><td>4.7</td><td>0.69</td><td>0.64</td><td>0.77</td><td>0.52</td><td>0.84</td><td>0.94</td><td>0.78</td><td>0.81</td><td>0.67</td><td>0.55</td><td>0.95</td><td>0.97</td><td>0.92</td></tr>
+      <tr><td>FAH-S</td><td><b>101</b></td><td>0.80</td><td>0.78</td><td>0.79</td><td>0.60</td><td><b>0.90</b></td><td><b>0.99</b></td><td>0.89</td><td>0.96</td><td>0.76</td><td>0.73</td><td><b>1.00</b></td><td>0.98</td><td>0.97</td></tr>
+      <tr><td>FAH-B</td><td>89</td><td>0.82</td><td>0.80</td><td>0.82</td><td>0.62</td><td><b>0.90</b></td><td><b>0.99</b></td><td>0.89</td><td>0.96</td><td>0.79</td><td>0.76</td><td><b>1.00</b></td><td><b>0.99</b></td><td><b>0.99</b></td></tr>
+      <tr class="ours"><td><b>FAH-L</b></td><td>65</td><td><b>0.83</b></td><td><b>0.81</b></td><td><b>0.83</b></td><td><b>0.64</b></td><td><b>0.90</b></td><td><b>0.99</b></td><td><b>0.90</b></td><td>0.96</td><td><b>0.81</b></td><td><b>0.78</b></td><td><b>1.00</b></td><td><b>0.99</b></td><td><b>0.99</b></td></tr>
+      <tr><td>FAH-H</td><td>27</td><td><b>0.83</b></td><td><b>0.81</b></td><td><b>0.83</b></td><td><b>0.64</b></td><td><b>0.90</b></td><td><b>0.99</b></td><td><b>0.90</b></td><td><b>0.97</b></td><td><b>0.81</b></td><td><b>0.78</b></td><td><b>1.00</b></td><td><b>0.99</b></td><td>0.98</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><small style="color: var(--muted);">PCK@0.1 on matched hands; incl.: missed hands count as failures; 3D fit: 3D joints projected at the best-fitting translation; overlap: PCK@0.1 incl. misses on 387 overlapping hands; shadows: the 278 scored hands of shadow_v1. fps as in the 3D table.</small></p>
+
+  <h3 id="contact-table">Hand contact</h3>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr class="group"><th></th><th colspan="3">HOT3D</th><th colspan="3">DexYCB s0</th></tr>
+      <tr><th>method</th><th>F1</th><th>AP</th><th>flag</th><th>F1</th><th>AP</th><th>flag</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>HACO</td><td>0.58</td><td>0.47</td><td>0.82</td><td>0.66</td><td>0.61</td><td>0.86</td></tr>
+      <tr><td>FAH-S</td><td>0.77</td><td>0.83</td><td><b>0.98</b></td><td>0.75</td><td>0.81</td><td><b>0.98</b></td></tr>
+      <tr><td>FAH-B</td><td>0.79</td><td>0.85</td><td><b>0.98</b></td><td>0.76</td><td><b>0.82</b></td><td><b>0.98</b></td></tr>
+      <tr class="ours"><td><b>FAH-L</b></td><td><b>0.80</b></td><td>0.85</td><td><b>0.98</b></td><td>0.76</td><td><b>0.82</b></td><td><b>0.98</b></td></tr>
+      <tr><td>FAH-H</td><td><b>0.80</b></td><td><b>0.86</b></td><td><b>0.98</b></td><td><b>0.77</b></td><td><b>0.82</b></td><td><b>0.98</b></td></tr>
+      <tr class="sep"><td colspan="7">full-pipeline detections<sup>&dagger;</sup></td></tr>
+      <tr><td>FAH-L, per frame<sup>&dagger;</sup></td><td><b>0.80</b></td><td>0.85</td><td><b>0.98</b></td><td>0.76</td><td><b>0.81</b></td><td><b>0.98</b></td></tr>
+      <tr class="ours"><td><b>FAH-L video</b><sup>&dagger;</sup></td><td><b>0.80</b></td><td><b>0.86</b></td><td>0.97</td><td><b>0.77</b></td><td><b>0.81</b></td><td>0.97</td></tr>
+      <tr class="sep"><td colspan="7">rules: distance to the known object mesh</td></tr>
+      <tr><td>rule: dense points</td><td>0.72</td><td>&mdash;</td><td>0.98</td><td>0.56</td><td>&mdash;</td><td>0.95</td></tr>
+      <tr><td>rule: fitted MANO</td><td>0.65</td><td>&mdash;</td><td>0.96</td><td>0.56</td><td>&mdash;</td><td>0.94</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><small style="color: var(--muted);">Training-disjoint HOT3D (5,172 hands, every 5th frame; HACO zero-shot) and DexYCB s0 test (9,506 hands; HACO trains on s0 train): pooled vertex F1 / AP and hand F1 (flag; vertices within 10&nbsp;mm of or inside the object), ground-truth boxes, validation-calibrated thresholds, one model per size. <sup>&dagger;</sup>Full-pipeline detections (25,431 / 9,319 hand-frames). Rules: distance to the known object mesh (25,378 / 9,225 detected hands). Model selection consulted these evaluation sets; HOI4D, ARCTIC and MOW: the paper&rsquo;s contact family table and supplement.</small></p>
+
+  <h3>Hands in world space</h3>
+  <p>FAH-L&rsquo;s video hands with the real-time camera model run at 29&nbsp;fps; with the offline camera mode at 7.1&nbsp;fps. <small style="color: var(--muted);">All camera stages; real time: joints and dense points without mesh fitting, parts or contact; offline: MANO fitting included. Desktop RTX 4070 Ti SUPER, 4 EgoStandard test clips, slower of 2 rounds; real time: streaming frame source, slower of the swap-free runs on this desktop (16&nbsp;GB RAM; WSL2 VM 14&nbsp;GB), whose memory is otherwise the limit; two processes are time-sliced on one GPU (no MPS under WSL2). Accuracy: the paper&rsquo;s world-space table.</small></p>
+
+  <h3>Training of the released models</h3>
+  <div class="table-wrap">
+  <table style="max-width: 560px;">
+    <thead>
+      <tr><th>model</th><th class="left">encoder initialisation</th><th>input</th><th>DexYCB</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>FAH-S</td><td class="left">distilled ViT-S/16</td><td>320&thinsp;px</td><td>6.26</td></tr>
+      <tr><td>FAH-B</td><td class="left">distilled ViT-B/16</td><td>320&thinsp;px</td><td>5.67</td></tr>
+      <tr class="ours"><td>FAH-L</td><td class="left">distilled ViT-L/16</td><td>320&thinsp;px</td><td>5.40</td></tr>
+      <tr><td>FAH-H</td><td class="left">teacher's own ViT-H+/16</td><td>448&thinsp;px</td><td><b>5.12</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><small style="color: var(--muted);">Shared data, losses and schedule for all four: two 12k-step blocks and 6k steps with the WiLoR targets; teacher inputs at 384&nbsp;px, student inputs at 256&nbsp;px; DexYCB: s0 test PA-MPJPE (mm) of the image model. FAH-L (ViT-L at 320&nbsp;px; model name <code>fah</code>) is the default.</small></p>
+
+  <h3>Apple silicon</h3>
+  <p>FAH supports Core ML inference on Apple silicon. See the <a href="acceleration.md#apple-silicon-core-ml-and-live-camera">acceleration guide</a> for export and timing instructions. Pose exports use float32 by default; throughput depends on the model, precision and device.</p>
+</section>
+
+<section id="comparison">
+  <h2>SAM 3D Body's hand branch vs FAH-L</h2>
+  <figure>
+    <img src="assets/compare_sam3db.jpg" alt="Public test hands: input, SAM 3D Body hand branch and FAH-L, with per-hand PCK@0.1" width="1800" height="534" loading="lazy">
+     <figcaption>bench2d v2 hands (held-out HOT3D benchmark clips, COCO and HInt with EPIC-KITCHENS-100 frames; ninth: synthetic low light), scored by per-hand PCK@0.1 against the 2D ground truth (numbers under the panels). One column per stratum (view, size, setting, skin tone, pose, two hands, back of hand, low light, blur): the first fitting hand in a fixed random order found by both with correct handedness (outdoor, blur: the first where FAH-L gains at least 0.1). FAH-L is 6.4&times; faster (65 vs 10 fps with CUDA graphs, 5.9 fps eager; desktop RTX 4070 Ti SUPER).<br><span class="credits">Left to right: 1 HOT3D benchmark clip-003029 frame 60; 2 EPIC-KITCHENS-100 via HInt, P18_02 frame 5994; 3 New Days via HInt, ND_DJnh5wqcr04 frame 16745; 4 &ldquo;<a href="https://www.flickr.com/photos/sataylor/5751833621">Luggage and all</a>&rdquo; by Sally Taylor (CC BY-NC 2.0) via COCO val2017 / COCO-WholeBody; 5 New Days via HInt, ND_YgnSpdJBNtc frame 60601; 6 New Days via HInt, ND_Uh5yhms9Zi4 frame 2991; 7 Flickr photo 7173995615 via COCO val2017 (CC BY-NC 2.0; author page no longer online); 8 EPIC-KITCHENS-100 via HInt, P09_02 frame 6972; 9 HOT3D benchmark clip-002044 frame 110, with our synthetic low light; 10 EPIC-KITCHENS-100 via HInt, P07_101 frame 16822. HOT3D: CC BY-SA 4.0, hand annotations CC BY-NC-SA 4.0; EPIC-KITCHENS-100 (Damen et al.): CC BY-NC 4.0; New Days of Hands (Cheng et al., NeurIPS 2023) frames via HInt (Pavlakos et al.; public test split; no separate frame licence stated); COCO-WholeBody: Jin et al. Overlays are ours.</span></figcaption>  </figure>
+</section>
+
+<section id="bibtex">
+  <h2>BibTeX</h2>
+  <div class="bib">
+    <button type="button" id="copy-bib">Copy</button>
+<pre id="bib-text">@misc{cao2026fastaccuratehandestimation,
+  title         = {Fast and Accurate Hand Estimation in Pixels, Interaction and World Space},
+  author        = {Jinkun Cao},
+  year          = {2026},
+  eprint        = {2611.07711},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  url           = {https://arxiv.org/abs/2611.07711}
+}</pre>
+  </div>
+</section>
+
+<section id="credits">
+  <h2>Credits</h2>
+  <ul class="credits-list">
+    <li>Teaser: Photo credits (Wikimedia Commons): keyboard, <a href="https://commons.wikimedia.org/wiki/File:Keyboard_with_fingers.jpg">Cangjie6</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>; knitting, <a href="https://commons.wikimedia.org/wiki/File:Oma_strickt_Str%C3%BCmpfe.jpg">Sadarama</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>; pottery, <a href="https://commons.wikimedia.org/wiki/File:Earthen_Potter_Hands.jpg">Earthen Potter</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>; Lego, &ldquo;<a href="https://commons.wikimedia.org/wiki/File:Playing_with_Lego_bricks.jpg">Playing with Lego bricks</a>&rdquo; by Nenad Stojkovic, <a href="https://creativecommons.org/licenses/by/2.0">CC BY 2.0</a>; Rubik&rsquo;s cube, &ldquo;<a href="https://commons.wikimedia.org/wiki/File:Rubik_cube_(345056969).jpg">Rubik cube (345056969)</a>&rdquo; by theilr, <a href="https://creativecommons.org/licenses/by-sa/2.0">CC BY-SA 2.0</a>. Frames of our held-out HOT3D benchmark clips (HOT3D&rsquo;s train_aria recordings; Banerjee et al., CVPR 2025), <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>. EPIC-KITCHENS-100 frames (Damen et al.) via the HInt test split (Pavlakos et al.), <a href="https://creativecommons.org/licenses/by-nc/4.0">CC BY-NC 4.0</a>. Overlays added by us; each scene is under its source&rsquo;s licence.</li>
+    <li>Method figure and the HOT3D outputs video: adapted from the held-out HOT3D benchmark clips (HOT3D&rsquo;s train_aria recordings; Banerjee et al., CVPR 2025; CC BY-SA 4.0); both are CC BY-SA 4.0.</li>
+    <li>Contact videos 1&ndash;4: adapted from held-out HOT3D benchmark clips (CC BY-SA 4.0); their ground-truth contact bars come from HOT3D&rsquo;s hand annotations (CC BY-NC-SA 4.0), so these clips are CC BY-NC-SA 4.0.</li>
+    <li>Contact figure (six held-out hands vs HACO): top row adapted from frames of the held-out HOT3D benchmark clips (CC BY-SA 4.0) and their hand annotations (ground-truth meshes and contact, CC BY-NC-SA 4.0), so these tiles are CC BY-NC-SA 4.0; bottom row adapted from DexYCB (Chao et al., CVPR 2021; CC BY-NC 4.0); CC BY-NC 4.0.</li>
+    <li>Contact strip: tiles 1&ndash;3 adapted from frames of the held-out HOT3D benchmark clips (CC BY-SA 4.0; these tiles are CC BY-SA 4.0); photos via COCO train2017 (Flickr): &ldquo;<a href="https://www.flickr.com/photos/mellis/9062942544">Nadya and Jeff making cellphones</a>&rdquo; by David Mellis (CC BY 2.0), &ldquo;<a href="https://www.flickr.com/photos/edenpictures/8352212112">Snack Break</a>&rdquo; by Eden, Janine and Jim (CC BY 2.0) and &ldquo;<a href="https://www.flickr.com/photos/brookage/274657051">vincent&rsquo;s last night in town</a>&rdquo; by brooke (CC BY-SA 2.0; that tile is CC BY-SA 2.0); cropped and overlaid with our mesh render.</li>
+    <li>SAM 3D Body comparison (per image in its caption): frames of the held-out HOT3D benchmark clips (CC BY-SA 4.0, hand annotations CC BY-NC-SA 4.0); EPIC-KITCHENS-100 frames (Damen et al.) via HInt (Pavlakos et al.), CC BY-NC 4.0; New Days of Hands (Cheng et al., NeurIPS 2023) frames via HInt (public test split; no separate frame licence stated); COCO val2017 / COCO-WholeBody (Jin et al.): &ldquo;<a href="https://www.flickr.com/photos/sataylor/5751833621">Luggage and all</a>&rdquo; by Sally Taylor (CC BY-NC 2.0) and Flickr photo 7173995615 (CC BY-NC 2.0; author page no longer online); cropped and overlaid with predictions.</li>
+    <li>Real-to-sim videos: adapted from DexYCB (Chao et al., CVPR 2021; CC BY-NC 4.0); CC BY-NC 4.0. Object reconstruction: SAM 3D Objects (Meta). Simulation: MuJoCo.</li>
+    <li>All contact juggling footage: <a href="https://www.youtube.com/@kumakumafilms">KUMA Films (@kumakumafilms)</a>. Cropped and overlaid with model predictions.</li>
+    <li>Head-mounted videos: HoloAssist (X. Wang et al., ICCV 2023, <a href="https://holoassist.github.io/">holoassist.github.io</a>), Community Data License Agreement &ndash; Permissive 2.0 (<a href="assets/videos/LICENSE-CDLA-Permissive-2.0.txt">licence text</a>); trimmed, cropped and overlaid with predictions.</li>
+    <li>In-the-wild test videos and the HACO comparison videos: the authors&rsquo; own videos.</li>
+    <li>Factory videos: Egocentric-10K (Build AI, 2025, <a href="https://huggingface.co/datasets/builddotai/Egocentric-10K">huggingface.co/datasets/builddotai/Egocentric-10K</a>), Apache License 2.0 (<a href="assets/videos/LICENSE-Apache-2.0-Egocentric-10K.txt">licence text</a>); trimmed, fisheye-undistorted, cropped and overlaid with predictions.</li>
+    <li>Close-up videos (Wikimedia Commons): &ldquo;<a href="https://commons.wikimedia.org/wiki/File:Knitting_demo_of_two_stitches.webm">Knitting demo of two stitches</a>&rdquo; by Fuzheado (CC BY-SA 3.0; our derived video is CC BY-SA 3.0) and &ldquo;<a href="https://commons.wikimedia.org/wiki/File:How_to_crochet_sl_st_turning_into_ch.webm">How to crochet sl st turning into ch</a>&rdquo; by Bastique (CC BY 4.0), both cropped and overlaid with predictions.</li>
+    <li>Other material on this page (text, tables, renders of the authors&rsquo; own videos): Apache License 2.0, as the code.</li>
+    <li>HoloAssist (Wang et al., ICCV 2023), <a href="https://holoassist.github.io/">holoassist.github.io</a>, session R066-15July-ATV-Part2, 39.1&ndash;59.1&nbsp;s; <a href="assets/videos/LICENSE-CDLA-Permissive-2.0.txt">CDLA-Permissive-2.0</a>; modified: cropped and overlaid with predictions.</li>
+    <li>HoloAssist (Wang et al., ICCV 2023), <a href="https://holoassist.github.io/">holoassist.github.io</a>, session R085-26July-DSLR, 15.0&ndash;35.2&nbsp;s; <a href="assets/videos/LICENSE-CDLA-Permissive-2.0.txt">CDLA-Permissive-2.0</a>; modified: cropped and overlaid with predictions.</li>
+    <li>Egocentric-10K (Build AI, 2025), <a href="https://huggingface.co/datasets/builddotai/Egocentric-10K">huggingface.co/datasets/builddotai/Egocentric-10K</a>, factory_051 / worker_005, 48.7&ndash;68.7&nbsp;s; <a href="assets/videos/LICENSE-Apache-2.0-Egocentric-10K.txt">Apache-2.0</a>; modified: undistorted, cropped and overlaid with predictions.</li>
+    <li>Egocentric-10K (Build AI, 2025), <a href="https://huggingface.co/datasets/builddotai/Egocentric-10K">huggingface.co/datasets/builddotai/Egocentric-10K</a>, factory_002 / worker_001, 63.0&ndash;83.0&nbsp;s; <a href="assets/videos/LICENSE-Apache-2.0-Egocentric-10K.txt">Apache-2.0</a>; modified: undistorted, cropped and overlaid with predictions.</li>
+  </ul>
+</section>
+
+<footer>
+  FAH project page.
+</footer>
+
+</main>
+<script>
+  document.getElementById('copy-bib').addEventListener('click', function () {
+    var b = this;
+    navigator.clipboard.writeText(document.getElementById('bib-text').textContent).then(function () {
+      b.textContent = 'Copied';
+      setTimeout(function () { b.textContent = 'Copy'; }, 1500);
+    });
+  });
+</script>
+</body>
+</html>

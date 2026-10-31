@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+/checkpoints/
+/weights/
+/data/
+/output/
+/thirdparty/
+*.pt
+*.ckpt
+*.engine
+*.onnx
+.DS_Store
+*.mlpackage
+
+/configs/local.json
